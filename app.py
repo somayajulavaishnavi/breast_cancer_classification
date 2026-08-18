@@ -57,7 +57,7 @@ if uploaded_file is not None:
             y_true = y_true.map({'M': 1, 'B': 0})
         X = data.drop(columns=['Diagnosis'])
     else:
-        y_targe = None
+        y_true = None
         X = data
 
     #Dropping ID column if its present
