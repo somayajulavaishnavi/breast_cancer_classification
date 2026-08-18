@@ -74,6 +74,11 @@ if uploaded_file is not None:
 
     # Predcitions
     st.subheader(f"Predictions using {selected_model_name}")
+     st.caption(
+        "**Probability (Malignant)** ranges from 0 to 1"
+         "Probability ≥ 0.5 → Predicts Malignant"
+         "Probability < 0.5 → Predicts Benign"
+    )
     results = X.copy()
     results['Predicted'] = np.where(y_pred == 1, 'Malignant', 'Benign')
     results['Probability (Malignant)'] = np.round(y_proba, 4)
