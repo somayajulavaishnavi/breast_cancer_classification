@@ -75,8 +75,8 @@ if uploaded_file is not None:
     # Predcitions
     st.subheader(f"Predictions using {selected_model_name}")
     st.caption(
-        "**Probability (Malignant)** ranges from 0 to 1"
-         "Probability ≥ 0.5 → Predicts Malignant"
+        "**Probability (Malignant)** ranges from 0 to 1.\n\n"
+         "Probability ≥ 0.5 → Predicts Malignant\n\n"
          "Probability < 0.5 → Predicts Benign"
     )
     results = X.copy()
