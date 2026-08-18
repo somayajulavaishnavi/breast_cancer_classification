@@ -43,36 +43,28 @@ st.sidebar.header("Configuration")
 uploaded_file = st.sidebar.file_uploader("Upload test CSV", type=['csv'])
 selected_model_name = st.sidebar.selectbox("Select Model", list(models.keys()))
 
-# ---- Optional: show static training comparison table ----
-with st.expander("View overall model comparison (from training)"):
-    try:
-        comparison_df = pd.read_csv('model/model_comparison_results.csv')
-        st.dataframe(comparison_df)
-    except FileNotFoundError:
-        st.write("model_comparison_results.csv not found in model/ folder.")
-
-# ---- Main logic ----
+#Uploading the CSV
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
 
     st.subheader("Uploaded Data Preview")
     st.dataframe(data.head())
 
-    # Separate features and target if target column is present
+   #Removing the target value from the test csv
     if 'Diagnosis' in data.columns:
         y_true = data['Diagnosis']
         if y_true.dtype == object:
             y_true = y_true.map({'M': 1, 'B': 0})
         X = data.drop(columns=['Diagnosis'])
     else:
-        y_true = None
+        y_targe = None
         X = data
 
-    # Drop ID column if present
+    #Dropping ID column if its present
     if 'ID' in X.columns:
         X = X.drop(columns=['ID'])
 
-    # Scale features using the SAME scaler fitted during training
+    # Scaling the features for an accurate prediction
     X_scaled = scaler.transform(X)
 
     # Predict using the selected model
@@ -80,14 +72,14 @@ if uploaded_file is not None:
     y_pred = model.predict(X_scaled)
     y_proba = model.predict_proba(X_scaled)[:, 1]
 
-    # ---- Show predictions ----
+    # Predcitions
     st.subheader(f"Predictions using {selected_model_name}")
-    results_display = X.copy()
-    results_display['Predicted'] = np.where(y_pred == 1, 'Malignant', 'Benign')
-    results_display['Probability (Malignant)'] = np.round(y_proba, 4)
-    st.dataframe(results_display)
+    results = X.copy()
+    results['Predicted'] = np.where(y_pred == 1, 'Malignant', 'Benign')
+    results['Probability (Malignant)'] = np.round(y_proba, 4)
+    st.dataframe(results)
 
-    # ---- If ground truth available, show metrics ----
+    #If target values available, Check the metrics
     if y_true is not None:
         st.subheader("Evaluation Metrics")
 
@@ -106,7 +98,7 @@ if uploaded_file is not None:
         col3.metric("F1 Score", f"{f1:.4f}")
         col3.metric("MCC", f"{mcc:.4f}")
 
-        # ---- Confusion Matrix ----
+        # Confusion Matrix
         st.subheader("Confusion Matrix")
         cm = confusion_matrix(y_true, y_pred)
         fig, ax = plt.subplots(figsize=(5, 4))
@@ -120,7 +112,7 @@ if uploaded_file is not None:
         ax.set_ylabel('Actual')
         st.pyplot(fig)
 
-        # ---- Classification Report ----
+        # Classfication Report
         st.subheader("Classification Report")
         report = classification_report(
             y_true, y_pred,
